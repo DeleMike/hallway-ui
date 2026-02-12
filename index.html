@@ -431,7 +431,7 @@ button:active {
 const username = prompt("Enter username:");
 document.getElementById('userLabel').textContent = username || 'anonymous';
 
-const socket = new WebSocket(`ws://localhost:8080/chat?username=${encodeURIComponent(username)}`);
+const socket = new WebSocket(`ws://hallwayserver.fly.dev/chat?username=${encodeURIComponent(username)}`);
 const messages = document.getElementById("messages");
 const count = document.getElementById("count");
 const emptyState = document.getElementById("emptyState");
