@@ -3,123 +3,494 @@
 <head>
 <meta charset="UTF-8">
 <title>Hallway</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+
+:root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --border-light: #2e2e2e;
+    --text: #e8e8e8;
+    --text-dim: #666;
+    --text-muted: #333;
+    --accent: #c8f03a;
+    --accent-dim: rgba(200, 240, 58, 0.12);
+    --accent-glow: rgba(200, 240, 58, 0.25);
+    --system: #555;
+    --scrollbar: #222;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial;
-    background: #f4f6f8;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
     display: flex;
+    align-items: center;
     justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Subtle background grid */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(200,240,58,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,240,58,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Vignette */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .chat {
-    width: 420px;
-    margin-top: 40px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    padding: 15px;
+    position: relative;
+    z-index: 1;
+    width: 460px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 1px rgba(200,240,58,0.05),
+        0 40px 80px rgba(0,0,0,0.8),
+        0 0 60px rgba(200,240,58,0.03);
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- HEADER ---- */
 .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: relative;
 }
 
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 22px; right: 22px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.3;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-mark {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    line-height: 1;
+}
+
+#gh {
+   color: var(--accent);
+}
+
+.divider-v {
+    width: 1px;
+    height: 16px;
+    background: var(--border-light);
+}
+
+.room-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent-glow);
+    animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--accent-glow); }
+    50% { opacity: 0.5; box-shadow: 0 0 2px transparent; }
+}
+
+/* ---- MESSAGES ---- */
 #messages {
-    height: 300px;
+    height: 340px;
     overflow-y: auto;
-    border: 1px solid #eee;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar) transparent;
+    background: var(--bg);
+}
+
+#messages::-webkit-scrollbar {
+    width: 3px;
+}
+
+#messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#messages::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border-radius: 99px;
 }
 
 .msg {
-    margin-bottom: 6px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+    padding: 6px 10px;
+    border-radius: 2px;
+    transition: background 0.15s;
+    animation: msgIn 0.2s ease both;
+    border-left: 2px solid transparent;
 }
 
-.system {
-    color: gray;
+.msg:hover {
+    background: var(--surface2);
+    border-left-color: var(--border-light);
+}
+
+@keyframes msgIn {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.msg .username {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.msg.system {
+    color: var(--system);
     font-style: italic;
+    font-size: 11.5px;
+    letter-spacing: 0.03em;
+    padding-left: 10px;
+    border-left-color: var(--border);
 }
 
-input {
-    width: 75%;
-    padding: 8px;
+.msg.system:hover {
+    background: transparent;
+}
+
+/* Empty state */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+    opacity: 0.25;
+}
+
+.empty-state .big-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.15em;
+    color: var(--text);
+}
+
+.empty-state .sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+/* ---- INPUT AREA ---- */
+.input-area {
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.input-area::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 22px; right: 22px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.15;
+}
+
+.input-wrap {
+    flex: 1;
+    position: relative;
+}
+
+.prompt-char {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    opacity: 0.6;
+    pointer-events: none;
+    line-height: 1;
+}
+
+#input {
+    width: 100%;
+    padding: 10px 12px 10px 26px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+}
+
+#input::placeholder {
+    color: var(--text-muted);
+}
+
+#input:focus {
+    border-color: var(--border-light);
+    box-shadow: 0 0 0 3px var(--accent-dim), inset 0 0 0 1px rgba(200,240,58,0.1);
+}
+
+#input:focus ~ .prompt-char,
+.input-wrap:focus-within .prompt-char {
+    opacity: 1;
 }
 
 button {
-    padding: 8px;
-    background: #007bff;
-    color: white;
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #0a0a0a;
     border: none;
-    border-radius: 4px;
+    border-radius: 2px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
 }
+
+button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.15s;
+}
+
+button:hover {
+    background: #d4f54a;
+    box-shadow: 0 0 20px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+
+button:hover::before {
+    background: rgba(255,255,255,0.05);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ---- FOOTER ---- */
+.footer {
+    padding: 8px 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+}
+
+.footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
 </style>
 </head>
 <body>
 
 <div class="chat">
     <div class="header">
-        <strong>Chat Room</strong>
-        <span id="count">Users: 0</span>
+        <div class="header-left">
+            <span class="logo-mark">Hallway</span>
+            <div class="divider-v"></div>
+            <span class="room-label">General</span>
+        </div>
+        <div class="status-pill">
+            <div class="status-dot"></div>
+            <span id="count">0 Hallers</span>
+        </div>
     </div>
 
-    <div id="messages"></div>
+    <div id="messages">
+        <div class="empty-state" id="emptyState">
+            <div class="big-text">quiet</div>
+            <div class="sub">be the first to say something</div>
+        </div>
+    </div>
 
-    <input id="input" placeholder="Type message..." />
-    <button onclick="send()">Send</button>
+    <div class="input-area">
+        <div class="input-wrap">
+            <span class="prompt-char">›</span>
+            <input id="input" placeholder="say something..." autocomplete="off" />
+        </div>
+        <button onclick="send()">Send</button>
+    </div>
+
+    <div class="footer">
+        <span class="footer-text">end-to-end · Built with ❤️ by <a href="https://github.com/DeleMike" target="_blank" rel="noopener noreferrer" id="gh">DeleMike</a>.</span>
+        <span class="footer-text" id="userLabel">anonymous</span>
+    </div>
 </div>
 
 <script>
 const username = prompt("Enter username:");
-const socket = new WebSocket(`ws://localhost:8080/chat?username=${username}`);
+document.getElementById('userLabel').textContent = username || 'anonymous';
 
+const socket = new WebSocket(`ws://localhost:8080/chat?username=${encodeURIComponent(username)}`);
 const messages = document.getElementById("messages");
 const count = document.getElementById("count");
+const emptyState = document.getElementById("emptyState");
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
     if (data.type === "chatMessage") {
-        addMessage(`${data.payload.username}: ${data.payload.message}`);
+        addMessage(data.payload.username, data.payload.message);
     }
 
     if (data.type === "system") {
-        addMessage(data.payload.text, true);
+        addMessage(null, data.payload.text, true);
     }
 
     if (data.type === "userCount") {
-        count.textContent = `Hallers: ${data.payload.count}`;
+        count.textContent = `${data.payload.count} Haller${data.payload.count !== 1 ? 's' : ''}`;
     }
 };
 
 function send() {
     const input = document.getElementById("input");
-    if (!input.value) return;
+    if (!input.value.trim()) return;
 
     const message = {
         type: "chatMessage",
-        payload: {
-            username: username,
-            message: input.value
-        }
+        payload: { username, message: input.value }
     };
 
     socket.send(JSON.stringify(message));
     input.value = "";
 }
 
-function addMessage(text, system=false) {
+function addMessage(user, text, isSystem = false) {
+    // Hide empty state on first message
+    if (emptyState) emptyState.remove();
+
     const div = document.createElement("div");
     div.classList.add("msg");
-    if (system) div.classList.add("system");
-    div.textContent = text;
+
+    if (isSystem) {
+        div.classList.add("system");
+        div.textContent = text;
+    } else {
+        const nameSpan = document.createElement("span");
+        nameSpan.classList.add("username");
+        nameSpan.textContent = user + " ";
+        div.appendChild(nameSpan);
+        div.appendChild(document.createTextNode(text));
+    }
+
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
 }
-</script>
 
+// Enter key to send
+document.getElementById("input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") send();
+});
+</script>
 </body>
 </html>
