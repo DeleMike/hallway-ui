@@ -431,7 +431,10 @@ button:active {
 const username = prompt("Enter username:");
 document.getElementById('userLabel').textContent = username || 'anonymous';
 
-const socket = new WebSocket(`ws://hallwayserver.fly.dev/chat?username=${encodeURIComponent(username)}`);
+// Use WSS if page is HTTPS, otherwise WS (for local dev)
+const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+const socket = new WebSocket(`${protocol}://hallwayserver.fly.dev/chat?username=${encodeURIComponent(username)}`);
+
 const messages = document.getElementById("messages");
 const count = document.getElementById("count");
 const emptyState = document.getElementById("emptyState");
@@ -466,7 +469,6 @@ function send() {
 }
 
 function addMessage(user, text, isSystem = false) {
-    // Hide empty state on first message
     if (emptyState) emptyState.remove();
 
     const div = document.createElement("div");
@@ -487,7 +489,6 @@ function addMessage(user, text, isSystem = false) {
     messages.scrollTop = messages.scrollHeight;
 }
 
-// Enter key to send
 document.getElementById("input").addEventListener("keydown", (e) => {
     if (e.key === "Enter") send();
 });
