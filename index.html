@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Hallway</title>
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f8;
+    display: flex;
+    justify-content: center;
+}
+
+.chat {
+    width: 420px;
+    margin-top: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 15px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#messages {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.msg {
+    margin-bottom: 6px;
+}
+
+.system {
+    color: gray;
+    font-style: italic;
+}
+
+input {
+    width: 75%;
+    padding: 8px;
+}
+
+button {
+    padding: 8px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="chat">
+    <div class="header">
+        <strong>Chat Room</strong>
+        <span id="count">Users: 0</span>
+    </div>
+
+    <div id="messages"></div>
+
+    <input id="input" placeholder="Type message..." />
+    <button onclick="send()">Send</button>
+</div>
+
+<script>
+const username = prompt("Enter username:");
+const socket = new WebSocket(`ws://localhost:8080/chat?username=${username}`);
+
+const messages = document.getElementById("messages");
+const count = document.getElementById("count");
+
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "chatMessage") {
+        addMessage(`${data.payload.username}: ${data.payload.message}`);
+    }
+
+    if (data.type === "system") {
+        addMessage(data.payload.text, true);
+    }
+
+    if (data.type === "userCount") {
+        count.textContent = `Hallers: ${data.payload.count}`;
+    }
+};
+
+function send() {
+    const input = document.getElementById("input");
+    if (!input.value) return;
+
+    const message = {
+        type: "chatMessage",
+        payload: {
+            username: username,
+            message: input.value
+        }
+    };
+
+    socket.send(JSON.stringify(message));
+    input.value = "";
+}
+
+function addMessage(text, system=false) {
+    const div = document.createElement("div");
+    div.classList.add("msg");
+    if (system) div.classList.add("system");
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+</script>
+
+</body>
+</html>
