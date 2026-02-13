@@ -71,19 +71,7 @@ body::after {
     z-index: 0;
 }
 
-/* ════════════════════════════════════════════
-   CHAT CONTAINER
 
-   THE FIX: the card needs an explicit height.
-   Without it, .chat grows to fit its children
-   forever and #messages (flex:1 inside it) has
-   no boundary to scroll within — overflow:auto
-   never triggers.
-
-   height: 600px  → fixed card on desktop
-   max-height: 92vh → shrinks on short screens
-   Mobile override below sets height: 100dvh.
-════════════════════════════════════════════ */
 .chat {
     position: relative;
     z-index: 1;
