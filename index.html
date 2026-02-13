@@ -495,7 +495,7 @@ const username = prompt("Enter username:");
 document.getElementById('userLabel').textContent = username || 'anonymous';
 
 const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-const socket = new WebSocket(`${protocol}://hallwayserver.fly.dev/chat?username=${encodeURIComponent(username)}`);
+const socket = new WebSocket(`${protocol}://hallway.pxxl.click/chat?username=${encodeURIComponent(username)}`);
 
 const messages = document.getElementById("messages");
 const count = document.getElementById("count");
