@@ -492,10 +492,10 @@ button:active { transform: translateY(0); box-shadow: none; background: #d4f54a;
 
 <script>
 const username = prompt("Enter username:");
-document.getElementById('userLabel').textContent = username || 'anonymous';
+document.getElementById('userLabel').textContent = (username ?? '') || 'anonymous';
 
 const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-const socket = new WebSocket(`${protocol}://hallway.pxxl.click/chat?username=${encodeURIComponent(username)}`);
+const socket = new WebSocket(`${protocol}://hallway.pxxl.click/chat?username=${encodeURIComponent(username) ?? ''}`);
 
 const messages = document.getElementById("messages");
 const count = document.getElementById("count");
